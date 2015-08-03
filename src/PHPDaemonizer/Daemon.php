@@ -108,7 +108,16 @@ class Daemon {
     /* is process with given --process-number running (check it via PID file) */
 
     public static function isProcessRunning() {
-        return file_exists(self::getPIDFileName());
+        $sPIDFile = self::getPIDFileName();
+        if (file_exists($sPIDFile)) {
+            $iPid = file_get_contents($sPIDFile);
+            // special signal 0 - if posix_kill return true, this pid is running
+            if (posix_kill($iPid, 0)) {
+                return true;
+            }
+            self::removePIDFile();
+        }
+        return false;
     }
 
     /*  descructor to catch moment the daemon is shutting down
@@ -283,7 +292,7 @@ class Daemon {
 
     private static function getPIDFileName() {
         $sSymbolicName = self::getCurrentScriptSymbolicName();
-        $sPIDFile = "/tmp/$sSymbolicName.pid";
+        $sPIDFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $sSymbolicName . ".pid";
         return $sPIDFile;
     }
 
