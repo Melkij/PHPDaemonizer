@@ -283,7 +283,7 @@ class Daemon {
 
     private static function getPIDFileName() {
         $sSymbolicName = self::getCurrentScriptSymbolicName();
-        $sPIDFile = "/tmp/$sSymbolicName.pid";
+        $sPIDFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $sSymbolicName . ".pid";
         return $sPIDFile;
     }
 
